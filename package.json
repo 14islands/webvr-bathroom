@@ -52,7 +52,8 @@
     "OBJLoader": "./node_modules/three/examples/js/loaders/OBJLoader.js",
     "VRControls": "./node_modules/three/examples/js/controls/VRControls.js",
     "VREffect": "./node_modules/three/examples/js/effects/VREffect.js",
-    "ViveController": "./node_modules/three/examples/js/vr/ViveController.js"
+    "ViveController": "./node_modules/three/examples/js/vr/ViveController.js",
+    "ColladaLoader": "./node_modules/three/examples/js/loaders/ColladaLoader.js"
   },
   "browserify": {
     "transform": [

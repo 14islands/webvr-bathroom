@@ -7,6 +7,7 @@ import _OBJLoader from 'OBJLoader'
 import _VRControls from 'VRControls'
 import _VREffect from 'VREffect'
 import _ViveController from 'ViveController'
+import _ColladaLoader from 'ColladaLoader'
 
 // Import WebVRManager npm module
 import WebVRManager from 'webvr-boilerplate'
@@ -51,7 +52,7 @@ function createScene () {
   })
 
   renderer.setPixelRatio(window.devicePixelRatio)
-  renderer.setClearColor(0xc6ccff, 1)
+  renderer.setClearColor(0x222222, 1)
 
   // Define the size of the renderer in this case,
   // it will fill the entire screen
@@ -80,14 +81,17 @@ function handleWindowResize () {
 function createLights () {
   // A directional light shines from a specific direction.
   // It acts like the sun, that means that all the rays produced are parallel.
-  const shadowLight = new THREE.DirectionalLight(0xffffff, 0.8)
+  const shadowLight = new THREE.DirectionalLight(0xffffff, 0.5)
 
   // Set the direction of the light
-  shadowLight.position.set(1, 2, -1)
+  shadowLight.position.set(0, 3, 0)
   shadowLight.position.normalize()
+
+  // scene.add(shadowLight)
 
   // Allow shadow casting
   shadowLight.castShadow = true
+  // shadowLight.castShadow = false
 
   // define the visible area of the projected shadow
   shadowLight.shadow.camera.left = -10
@@ -108,10 +112,35 @@ function createLights () {
   shadowLight.shadow.mapSize.height = 1024 * 2
 
   // an ambient light modifies the global color of a scene and makes the shadows softer
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
-
-  scene.add(shadowLight)
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.2)
   scene.add(ambientLight)
+
+  // spegel
+  const pointLight = new THREE.PointLight(0xffffff, 0.8, 5, 2)
+  pointLight.castShadow = true
+  pointLight.position.set(0.7, 1.9, -0.3)
+  // scene.add(new THREE.PointLightHelper(pointLight, 0.1))
+  scene.add(pointLight)
+
+  // badrumsmatta
+  const spot1 = new THREE.PointLight(0xffffff, 0.6, 5, 2)
+  spot1.castShadow = true
+  spot1.position.set(0.34, 2.35, -0.32)
+  // scene.add(new THREE.PointLightHelper(spot1, 0.1))
+  scene.add(spot1)
+
+  // tvättmasking
+  const spot2 = new THREE.PointLight(0xffffff, 0.6, 5, 2)
+  spot2.castShadow = true
+  spot2.position.set(0.45, 2.35, 0.23)
+  // scene.add(new THREE.PointLightHelper(spot2, 0.1))
+  scene.add(spot2)
+
+  const spot3 = new THREE.PointLight(0xffffff, 0.6, 5, 2)
+  spot3.castShadow = true
+  spot3.position.set(-0.23, 2.35, -0.12)
+  // scene.add(new THREE.PointLightHelper(spot3, 0.1))
+  scene.add(spot3)
 }
 
 function createSnowFall () {
@@ -158,6 +187,60 @@ function loadViveControllerModels () {
     viveController1.add(object.clone())
     viveController2.add(object.clone())
   })
+}
+
+let dae = null
+
+function loadRoom () {
+  var loader = new THREE.ColladaLoader();
+			loader.options.convertUpAxis = true;
+			loader.load( 'assets/models/room-dae/room.dae', function ( collada ) {
+        console.log('collada', collada)
+				dae = collada.scene;
+
+        // let daemesh = dae.children[0].children[0]
+        // daemesh.castShadow = true
+        // daemesh.receiveShadow = true
+        // for (let obj of collada.scene.children[0].children) {
+        //   console.log(obj.name)
+        //   if (obj.name == 'kommod') {
+        //     console.log('SHADDOW:', obj)
+        //     obj.castShadow = true
+        //     obj.receiveShadow = true
+        //     for (let mesh of obj.children) {
+        //       mesh.castShadow = true
+        //       mesh.receiveShadow = true
+        //     }
+        //   }
+        //   if (obj.name == 'group-floor') {
+        //     console.log('FLOOR', obj)
+        //     obj.castShadow = false
+        //     obj.receiveShadow = true
+        //     for (let mesh of obj.children) {
+        //       console.log('FLOOR mesh', mesh)
+        //       mesh.castShadow = false
+        //       mesh.receiveShadow = true
+        //     }
+        //   }
+        // }
+				// dae.scale.x = dae.scale.y = dae.scale.z = 0.002;
+				dae.updateMatrix();
+
+
+        // dae.position.z = -2
+        // dae.rotation.y = Math.PI / 3
+				// Add the COLLADA
+				scene.add( dae );
+
+        // var geometry = new THREE.SphereGeometry( 0.1, 32, 32 );
+        // var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+        // var sphere = new THREE.Mesh( geometry, material );
+        // sphere.position.y = 1.5
+        // sphere.position.x = .3
+        // sphere.castShadow = true
+        // scene.add( sphere );
+
+			} );
 }
 
 function showControllerGuideRays () {
@@ -208,7 +291,9 @@ function init () {
   createLights()
 
   // add the objects
-  createSnowFall()
+  // createSnowFall()
+
+  loadRoom()
 
   // // Apply VR headset positional data to camera.
   vrControls = new THREE.VRControls(camera)
